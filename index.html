@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>¡Feliz Cumpleaños! 🎉</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <!-- Sección Principal -->
+    <div id="home" class="section">
+        <div class="container">
+            <h1>🎊 ¡FELIZ CUMPLEAÑOS! 🎊</h1>
+            <div class="name">María</div>
+            <p class="message">
+                Que este día tan especial esté lleno de alegría, amor y momentos inolvidables.
+                ¡Que todos tus sueños se hagan realidad! 🎈✨
+            </p>
+            <div class="cake" onclick="celebrate()">🎂</div>
+            <br><br>
+            <button id="musicBtn" class="btn" onclick="playMusic()">🎵 Reproducir Música</button>
+            <a href="#carta" class="btn">💌 Leer Carta</a>
+        </div>
+    </div>
+
+    <!-- Sección de la Carta -->
+    <div id="carta" class="section letter-section">
+        <div class="letter-container">
+            <h2 class="letter-title">💕 Una Carta Para Ti 💕</h2>
+            <div class="letter-content">
+                <p>Querida María,</p>
+
+                <p>
+                    En este día tan especial, quiero que sepas lo importante que eres en mi vida.
+                    Tu amistad ha sido uno de los regalos más valiosos que he recibido, y no hay
+                    palabras suficientes para expresar cuánto aprecio cada momento que hemos compartido.
+                </p>
+
+                <p>
+                    Admiro tu fuerza, tu bondad y esa capacidad que tienes de iluminar cualquier lugar
+                    al que llegas. Eres una persona increíble, y me siento afortunado/a de poder llamarte
+                    amiga. Gracias por estar siempre ahí, por tus consejos, tus risas y por ser tú misma.
+                </p>
+
+                <p>
+                    Que este nuevo año de vida esté lleno de aventuras maravillosas, sueños cumplidos
+                    y toda la felicidad que mereces. Sigues brillando con luz propia, y sé que lo mejor
+                    está por venir para ti.
+                </p>
+
+                <p>
+                    ¡Feliz cumpleaños! Que sigas siendo esa persona extraordinaria que tanto queremos.
+                </p>
+
+                <div class="signature">
+                    Con todo mi cariño, ❤️<br>
+                    [Tu nombre aquí]
+                </div>
+            </div>
+            <a href="#home" class="btn back-btn">🎈 Volver al Inicio</a>
+        </div>
+    </div>
+
+    <audio id="bgMusic" loop>
+        <source src="_17 AÑOS _ LOS ANGELES AZULES.mp3" type="audio/mpeg">
+    </audio>
+
+    <script>
+        const colors = ['#ff6b6b', '#4ecdc4', '#45b7d1', '#f9ca24', '#6c5ce7', '#fd79a8', '#fdcb6e', '#e17055'];
+        let musicPlaying = false;
+
+        function createConfetti() {
+            const confetti = document.createElement('div');
+            confetti.className = 'confetti';
+            confetti.style.left = Math.random() * 100 + 'vw';
+            confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
+            confetti.style.animationDuration = (Math.random() * 3 + 2) + 's';
+            confetti.style.opacity = Math.random();
+            document.body.appendChild(confetti);
+
+            setTimeout(() => {
+                confetti.remove();
+            }, 5000);
+        }
+
+        function createBalloon() {
+            const balloon = document.createElement('div');
+            balloon.className = 'balloon';
+            balloon.textContent = '🎈';
+            balloon.style.left = Math.random() * 90 + 'vw';
+            balloon.style.animationDuration = (Math.random() * 3 + 5) + 's';
+            document.body.appendChild(balloon);
+
+            setTimeout(() => {
+                balloon.remove();
+            }, 8000);
+        }
+
+        function celebrate() {
+            for (let i = 0; i < 30; i++) {
+                setTimeout(createConfetti, i * 50);
+            }
+        }
+
+        function playMusic() {
+            const music = document.getElementById('bgMusic');
+            const btn = document.getElementById('musicBtn');
+            if (!musicPlaying) {
+                music.play();
+                musicPlaying = true;
+                btn.textContent = '⏸️ Pausar Música';
+            } else {
+                music.pause();
+                musicPlaying = false;
+                btn.textContent = '🎵 Reproducir Música';
+            }
+        }
+
+        setInterval(createConfetti, 300);
+        setInterval(createBalloon, 2000);
+
+        setTimeout(celebrate, 500);
+    </script>
+</body>
+
+</html>
