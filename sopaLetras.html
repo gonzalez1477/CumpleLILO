@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sopa de Letras - LILO</title>
+
+    <style>
+        :root {
+            --grid-size: 15;
+            --cell-gap: 2px;
+        }
+
+        /* --- MODIFICADO: Estilos del Body --- */
+        body,
+        html {
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background: linear-gradient(135deg, #4a0000 0%, #800000 50%, #5a0000 100%);
+            color: #fff;
+            /* Color de texto por defecto blanco */
+            min-height: 100vh;
+        }
+
+        .section {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            box-sizing: border-box;
+            min-height: 100vh;
+        }
+
+        /* --- MODIFICADO: Contenedor principal con efecto "vidrio" --- */
+        .sopa-container {
+            width: 100%;
+            max-width: 700px;
+            margin: 20px auto;
+            padding: 30px;
+            background: rgba(255, 255, 255, 0.1);
+            /* Fondo semitransparente */
+            border-radius: 20px;
+            /* Bordes más redondeados */
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(5px);
+            box-sizing: border-box;
+        }
+
+        .sopa-title,
+        .sopa-instruction {
+            text-align: center;
+        }
+
+        /* --- MODIFICADO: Colores de texto --- */
+        .sopa-title {
+            color: #fff;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            margin-bottom: 10px;
+        }
+
+        .sopa-instruction {
+            color: #ffe0b3;
+            /* Tono cálido */
+            margin-top: 0;
+        }
+
+        .sopa-content {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sopa-right {
+            order: 1;
+            width: 100%;
+            margin-bottom: 25px;
+        }
+
+        /* --- MODIFICADO: Colores de texto --- */
+        .words-list h3 {
+            text-align: center;
+            margin-top: 0;
+            color: #fff;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+            padding-bottom: 10px;
+        }
+
+        #wordsList {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        /* --- MODIFICADO: Estilo de lista de palabras --- */
+        #wordsList li {
+            margin: 5px;
+            padding: 8px 15px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            /* Semitransparente */
+            font-size: 0.9em;
+            font-weight: 500;
+            color: #ffe0b3;
+            /* Tono cálido */
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        #wordsList li.found {
+            text-decoration: line-through;
+            border-color: transparent;
+            /* El JS se encarga del fondo y color de texto */
+        }
+
+
+        .sopa-left {
+            order: 2;
+            width: 100%;
+        }
+
+        /* --- MODIFICADO: Estilo de la cuadrícula --- */
+        .word-grid {
+            display: grid;
+            grid-template-columns: repeat(var(--grid-size), 1fr);
+            gap: var(--cell-gap);
+            background-color: rgba(0, 0, 0, 0.3);
+            /* Fondo de líneas oscuro */
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            /* Borde claro */
+            width: 100%;
+            box-sizing: border-box;
+            border-radius: 8px;
+            /* Bordes redondeados */
+            overflow: hidden;
+            /* Para que las celdas se ajusten al borde */
+        }
+
+        /* --- MODIFICADO: Estilo de las celdas --- */
+        .letter-cell {
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            background: rgba(255, 255, 255, 0.1);
+            /* Celdas semitransparentes */
+            color: #fff;
+            /* Texto blanco */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: clamp(10px, 4vw, 18px);
+            font-weight: bold;
+            user-select: none;
+            -webkit-user-select: none;
+            cursor: pointer;
+            transition: all 0.2s;
+            /* Transición para todo */
+            text-transform: uppercase;
+        }
+
+        .letter-cell:hover {
+            background: rgba(255, 255, 255, 0.2);
+            /* Más claro al pasar el mouse */
+            transform: scale(1.1);
+        }
+
+        .letter-cell.selected-temp {
+            background-color: #f1c40f;
+            color: #000;
+            /* Texto oscuro para el amarillo */
+            opacity: 0.9;
+        }
+
+        .letter-cell.found {
+            transition: background-color 0.5s ease;
+            font-weight: bold;
+            /* El JS se encarga del color de fondo y texto */
+        }
+
+        /* --- MODIFICADO: Color de texto --- */
+        .sopa-progress {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 1.1em;
+            font-weight: 500;
+            color: #ffe0b3;
+            /* Tono cálido */
+        }
+
+        /* --- NUEVO: Estilos para el botón de Volver --- */
+        .btn {
+            background: linear-gradient(45deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.2em;
+            border-radius: 50px;
+            cursor: pointer;
+            margin: 30px auto 10px;
+            /* Margen para separarlo */
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s, box-shadow 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+        }
+
+        /* --- NUEVO: Estilos para Confeti y Globos --- */
+        .confetti {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            background: #f0f;
+            position: absolute;
+            animation: fall linear infinite;
+            z-index: -1;
+        }
+
+        .balloon {
+            position: fixed;
+            bottom: -100px;
+            font-size: 3em;
+            animation: float 6s ease-in-out infinite;
+            z-index: -1;
+        }
+
+        @keyframes fall {
+            to {
+                transform: translateY(100vh) rotate(360deg);
+            }
+        }
+
+        @keyframes float {
+            0% {
+                bottom: -100px;
+                transform: translateX(0);
+            }
+
+            50% {
+                transform: translateX(20px);
+            }
+
+            100% {
+                bottom: 110vh;
+                transform: translateX(-20px);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="section sopa-section">
+        <div class="sopa-container">
+            <h2 class="sopa-title">🔍 Sopa de Letras Secreta 🔍</h2>
+            <p class="sopa-instruction">Encuentra todas las palabras ocultas</p>
+
+            <div class="sopa-content">
+
+                <div class="sopa-right">
+                    <div class="words-list">
+                        <h3>🎯 Palabras a Buscar</h3>
+                        <ul id="wordsList">
+                            <li data-word="RATA">RATA</li>
+                            <li data-word="MICHINITA">MI CHINITA</li>
+                            <li data-word="ENANA">ENANA</li>
+                            <li data-word="DUENDE">DUENDE</li>
+                            <li data-word="ZORRA">ZORRA</li>
+                            <li data-word="PERRA">PERRA</li>
+                            <li data-word="MIAMOR">MI AMOR</li>
+                            <li data-word="CARIÑOSA">CARIÑOSA</li>
+                            <li data-word="BONITA">BONITA</li>
+                            <li data-word="NINFÓMANA">NINFÓMANA</li>
+                            <li data-word="LOCA">LOCA</li>
+                            <li data-word="REVELDE">REVELDE</li>
+                            <li data-word="CARISMÁTICA">CARISMÁTICA</li>
+                            <li data-word="PEQUEÑA">PEQUEÑA</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="sopa-left">
+                    <div id="wordGrid" class="word-grid"></div>
+                    <div class="sopa-progress">
+                        <p>Palabras encontradas: <span id="foundCount">0</span> / 14</p>
+                    </div>
+
+                    <a href="index.html" class="btn">❤️ Volver</a>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const words = [
+            'RATA', 'MICHINITA', 'ENANA', 'DUENDE', 'ZORRA', 'PERRA',
+            'MIAMOR', 'CARIÑOSA', 'BONITA', 'NINFÓMANA', 'LOCA',
+            'REVELDE', 'CARISMÁTICA', 'PEQUEÑA'
+        ];
+
+        const wordColors = [
+            '#FFADAD', '#FFD6A5', '#FDFFB6', '#CAFFBF', '#9BF6FF',
+            '#A0C4FF', '#BDB2FF', '#FFC6FF', '#E4C1F9', '#FDE4CF',
+            '#F0F66E', '#AFE5D0', '#FFC0CB', '#D6E2E9'
+        ];
+
+        const gridSize = 15;
+        let grid = [];
+        let selectedCells = [];
+        let foundWords = [];
+        let isSelecting = false;
+
+        function initGrid() {
+            grid = Array(gridSize).fill().map(() => Array(gridSize).fill(''));
+            document.documentElement.style.setProperty('--grid-size', gridSize);
+
+            words.forEach(word => {
+                let placed = false;
+                let attempts = 0;
+                while (!placed && attempts < 100) {
+                    const direction = Math.floor(Math.random() * 3);
+                    const row = Math.floor(Math.random() * gridSize);
+                    const col = Math.floor(Math.random() * gridSize);
+
+                    if (canPlaceWord(word, row, col, direction)) {
+                        placeWord(word, row, col, direction);
+                        placed = true;
+                    }
+                    attempts++;
+                }
+                if (!placed) {
+                    console.warn(`No se pudo colocar la palabra: ${word}`);
+                }
+            });
+
+            const letters = 'ABCDEFGHIJKLMNÑOPQRSTUVWXYZÁÉÍÓÚ';
+            for (let i = 0; i < gridSize; i++) {
+                for (let j = 0; j < gridSize; j++) {
+                    if (grid[i][j] === '') {
+                        grid[i][j] = letters[Math.floor(Math.random() * letters.length)];
+                    }
+                }
+            }
+
+            renderGrid();
+        }
+
+        function canPlaceWord(word, row, col, direction) {
+            if (direction === 0) { // Horizontal
+                if (col + word.length > gridSize) return false;
+                for (let i = 0; i < word.length; i++) {
+                    if (grid[row][col + i] !== '' && grid[row][col + i] !== word[i]) return false;
+                }
+            } else if (direction === 1) { // Vertical
+                if (row + word.length > gridSize) return false;
+                for (let i = 0; i < word.length; i++) {
+                    if (grid[row + i][col] !== '' && grid[row + i][col] !== word[i]) return false;
+                }
+            } else { // Diagonal
+                if (row + word.length > gridSize || col + word.length > gridSize) return false;
+                for (let i = 0; i < word.length; i++) {
+                    if (grid[row + i][col + i] !== '' && grid[row + i][col + i] !== word[i]) return false;
+                }
+            }
+            return true;
+        }
+
+        function placeWord(word, row, col, direction) {
+            for (let i = 0; i < word.length; i++) {
+                if (direction === 0) {
+                    grid[row][col + i] = word[i];
+                } else if (direction === 1) {
+                    grid[row + i][col] = word[i];
+                } else {
+                    grid[row + i][col + i] = word[i];
+                }
+            }
+        }
+
+        function renderGrid() {
+            const gridElement = document.getElementById('wordGrid');
+            gridElement.innerHTML = '';
+
+            const gap = Math.max(1, Math.floor(gridElement.clientWidth / 200));
+            gridElement.style.gap = `${gap}px`;
+            document.documentElement.style.setProperty('--cell-gap', `${gap}px`);
+
+
+            for (let i = 0; i < gridSize; i++) {
+                for (let j = 0; j < gridSize; j++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'letter-cell';
+                    cell.textContent = grid[i][j];
+                    cell.dataset.row = i;
+                    cell.dataset.col = j;
+
+                    cell.addEventListener('mousedown', (e) => {
+                        e.preventDefault();
+                        startSelection(e.target)
+                    });
+                    cell.addEventListener('mouseenter', (e) => continueSelection(e.target));
+                    cell.addEventListener('mouseup', endSelection);
+
+                    cell.addEventListener('touchstart', (e) => {
+                        e.preventDefault();
+                        startSelection(e.target)
+                    });
+                    cell.addEventListener('touchmove', (e) => {
+                        e.preventDefault();
+                        const touch = e.touches[0];
+                        const element = document.elementFromPoint(touch.clientX, touch.clientY);
+                        if (element && element.classList.contains('letter-cell')) {
+                            continueSelection(element);
+                        }
+                    });
+                    cell.addEventListener('touchend', endSelection);
+
+                    gridElement.appendChild(cell);
+                }
+            }
+            document.addEventListener('mouseup', endSelection);
+            document.addEventListener('touchend', endSelection);
+        }
+
+        function startSelection(cell) {
+            document.querySelectorAll('.selected-temp').forEach(c => c.classList.remove('selected-temp'));
+
+            isSelecting = true;
+            selectedCells = [];
+            toggleCell(cell);
+        }
+
+        function continueSelection(cell) {
+            if (isSelecting) {
+                toggleCell(cell);
+            }
+        }
+
+        function endSelection() {
+            if (!isSelecting) return;
+            isSelecting = false;
+            checkWord();
+        }
+
+        function toggleCell(cell) {
+            if (cell && !selectedCells.includes(cell)) {
+                selectedCells.push(cell);
+                cell.classList.add('selected-temp');
+            }
+        }
+
+        function checkWord() {
+            if (selectedCells.length === 0) return;
+
+            const word = selectedCells.map(cell => cell.textContent).join('');
+            const wordReversed = selectedCells.map(cell => cell.textContent).reverse().join('');
+
+            let foundWord = null;
+            if (words.includes(word) && !foundWords.includes(word)) {
+                foundWord = word;
+            } else if (words.includes(wordReversed) && !foundWords.includes(wordReversed)) {
+                foundWord = wordReversed;
+                selectedCells.reverse();
+            }
+
+
+            if (foundWord) {
+                const colorIndex = foundWords.length % wordColors.length;
+                const nextColor = wordColors[colorIndex];
+
+                foundWords.push(foundWord);
+
+                selectedCells.forEach(cell => {
+                    cell.classList.remove('selected-temp');
+                    cell.classList.add('found');
+                    cell.style.backgroundColor = nextColor;
+                    cell.style.color = '#000';
+                });
+
+                const listItem = document.querySelector(`li[data-word="${foundWord}"]`);
+                if (listItem) {
+                    listItem.classList.add('found');
+                    listItem.style.backgroundColor = nextColor;
+                    listItem.style.color = '#000';
+                }
+
+                document.getElementById('foundCount').textContent = foundWords.length;
+
+                if (foundWords.length === words.length) {
+                    setTimeout(() => {
+                        alert('¡Has pasado al siguiente nivel, ahora eres una perra superior! 🎉');
+                        window.location.href = 'carta.html';
+                    }, 500);
+                }
+            } else {
+                selectedCells.forEach(cell => {
+                    cell.classList.remove('selected-temp');
+                });
+            }
+            selectedCells = [];
+        }
+
+        window.addEventListener('load', initGrid);
+
+        /* --- NUEVO: Script de Confeti y Globos --- */
+        const colors = ['#ff6b6b', '#4ecdc4', '#45b7d1', '#f9ca24', '#6c5ce7', '#fd79a8', '#fdcb6e', '#e17055'];
+
+        function createConfetti() {
+            const confetti = document.createElement('div');
+            confetti.className = 'confetti';
+            confetti.style.left = Math.random() * 100 + 'vw';
+            confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
+            confetti.style.animationDuration = (Math.random() * 3 + 2) + 's';
+            confetti.style.opacity = Math.random();
+            document.body.appendChild(confetti);
+
+            setTimeout(() => {
+                confetti.remove();
+            }, 5000);
+        }
+
+        function createBalloon() {
+            const balloon = document.createElement('div');
+            balloon.className = 'balloon';
+            balloon.textContent = '🎈';
+            balloon.style.left = Math.random() * 90 + 'vw';
+            balloon.style.animationDuration = (Math.random() * 3 + 5) + 's';
+            document.body.appendChild(balloon);
+
+            setTimeout(() => {
+                balloon.remove();
+            }, 8000);
+        }
+
+        // Iniciar animaciones
+        setInterval(createConfetti, 300);
+        setInterval(createBalloon, 2000);
+        /* --- FIN DE SCRIPT NUEVO --- */
+
+    </script>
+</body>
+
+</html>

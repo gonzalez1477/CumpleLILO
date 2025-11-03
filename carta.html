@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carta para LILO 💕</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body,
+        html {
+            font-family: 'Arial', sans-serif;
+            overflow-x: hidden;
+            /* Fondo oscuro y cálido */
+            background: linear-gradient(135deg, #4a0000 0%, #800000 50%, #5a0000 100%);
+            scroll-behavior: smooth;
+            color: #fff;
+            min-height: 100%;
+        }
+
+        .section {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            padding: 40px 20px;
+        }
+
+        /* Estilo de la carta (Glassmorphism) */
+        .letter-container {
+            width: 100%;
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 40px;
+            background: rgba(255, 255, 255, 0.1);
+            /* Fondo semitransparente */
+            border-radius: 20px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(5px);
+            text-align: center;
+        }
+
+        .letter-title {
+            font-size: 2.5em;
+            color: #fff;
+            margin-bottom: 30px;
+            font-weight: bold;
+            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+            animation: pulse 2s infinite ease-in-out;
+        }
+
+        .letter-content {
+            font-size: 1.25em;
+            color: #ffe0b3;
+            /* Tono cálido */
+            line-height: 1.8;
+            text-align: left;
+            /* Párrafos alineados a la izquierda */
+            margin-bottom: 30px;
+        }
+
+        .letter-content p {
+            margin-bottom: 25px;
+            /* Espacio entre párrafos */
+        }
+
+        .signature {
+            font-size: 1.5em;
+            color: #fff;
+            font-style: italic;
+            text-align: right;
+            margin-top: 40px;
+            line-height: 1.4;
+            /* Espacio para el corazón */
+        }
+
+        /* ESTILO INTERACTIVO */
+        .interactive-word {
+            color: #ffd700;
+            /* Color dorado para resaltar */
+            font-weight: bold;
+            cursor: pointer;
+            position: relative;
+            transition: color 0.2s;
+        }
+
+        .interactive-word:hover {
+            color: #fff;
+            /* Se pone blanco al pasar el mouse */
+        }
+
+        /* Emoji que aparece */
+        .popup-emoji {
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 1.5em;
+            animation: pop-up 0.5s ease-out;
+            pointer-events: none;
+        }
+
+        /* Botón de Volver */
+        .btn {
+            background: linear-gradient(45deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.2em;
+            border-radius: 50px;
+            cursor: pointer;
+            margin: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s, box-shadow 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+        }
+
+        /* Animaciones de fondo (Globos y Confeti) */
+        .confetti {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            background: #f0f;
+            position: absolute;
+            animation: fall linear infinite;
+            z-index: -1;
+        }
+
+        .balloon {
+            position: fixed;
+            bottom: -100px;
+            font-size: 3em;
+            animation: float 6s ease-in-out infinite;
+            z-index: -1;
+        }
+
+        /* Keyframes */
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.05);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        @keyframes pop-up {
+            0% {
+                opacity: 0;
+                transform: translate(-50%, 0);
+            }
+
+            50% {
+                opacity: 1;
+            }
+
+            100% {
+                opacity: 0;
+                transform: translate(-50%, -30px);
+            }
+        }
+
+        @keyframes fall {
+            to {
+                transform: translateY(100vh) rotate(360deg);
+            }
+        }
+
+        @keyframes float {
+            0% {
+                bottom: -100px;
+                transform: translateX(0);
+            }
+
+            50% {
+                transform: translateX(20px);
+            }
+
+            100% {
+                bottom: 110vh;
+                transform: translateX(-20px);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .letter-container {
+                padding: 25px;
+            }
+
+            .letter-title {
+                font-size: 2em;
+            }
+
+            .letter-content {
+                font-size: 1.1em;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="section letter-section">
+        <div class="letter-container">
+            <h2 class="letter-title">💕 Una Carta Para Ti 💕</h2>
+
+            <div class="letter-content">
+                <p>Mi querida CHINITA:</p>
+
+                <p>
+                    Que divertido es verte <span class="interactive-word" data-emoji="😂">crecer</span>,
+                    asi de la nada nos conocimos por un
+                    <span class="interactive-word" data-emoji="🎮">juego</span>
+                    todo feo de gente pobre, molestamos como si nos conocieramos desde q nacimos,
+                    y hacemos cosas que todos se quedarian con cara de
+                    <span class="interactive-word" data-emoji="🤯">WTF</span>.
+                </p>
+
+                <p>
+                    Somos un buen <span class="interactive-word" data-emoji="🦸‍♀️">duo dinamico</span>
+                    y no me refiero al de free, valoro tu presencia en mi existencia,
+                    sos una buena <span class="interactive-word" data-emoji="🤪">manca</span>,
+                    aveses si me estreso pero no es algo q no se pueda solucionar con tus
+                    <span class="interactive-word" data-emoji="🍋">limones</span>.
+                </p>
+
+                <p>
+                    Te aprecio bastante mi pequeña, sos una persona
+                    <span class="interactive-word" data-emoji="💎">valiosa</span>
+                    para mi. Deceo que cumplas muchos años mas y sin encima de mi estaria mucho mejor jajajaja.
+                </p>
+
+                <p>
+                    despues iremos a celebrarlo como nosotros sabemos hacerlo,
+                    aqui tengo la <span class="interactive-word" data-emoji="🍆">velita</span>
+                    q vas a soplar jajajaja.
+                </p>
+
+                <div class="signature">
+                    TE QUIERO <span class="interactive-word" data-emoji="🐭">RATA</span> ❤️<br>
+                    [de GOTZY]
+                </div>
+            </div>
+            <a href="index.html" class="btn back-btn">🎈 Volver al Inicio</a>
+        </div>
+    </div>
+
+    <script>
+        /* --- Script de Confeti y Globos --- */
+        const colors = ['#ff6b6b', '#4ecdc4', '#45b7d1', '#f9ca24', '#6c5ce7', '#fd79a8', '#fdcb6e', '#e17055'];
+
+        function createConfetti() {
+            const confetti = document.createElement('div');
+            confetti.className = 'confetti';
+            confetti.style.left = Math.random() * 100 + 'vw';
+            confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
+            confetti.style.animationDuration = (Math.random() * 3 + 2) + 's';
+            confetti.style.opacity = Math.random();
+            document.body.appendChild(confetti);
+
+            setTimeout(() => {
+                confetti.remove();
+            }, 5000);
+        }
+
+        function createBalloon() {
+            const balloon = document.createElement('div');
+            balloon.className = 'balloon';
+            balloon.textContent = '🎈';
+            balloon.style.left = Math.random() * 90 + 'vw';
+            balloon.style.animationDuration = (Math.random() * 3 + 5) + 's';
+            document.body.appendChild(balloon);
+
+            setTimeout(() => {
+                balloon.remove();
+            }, 8000);
+        }
+
+        // Iniciar animaciones de fondo
+        setInterval(createConfetti, 300);
+        setInterval(createBalloon, 2000);
+
+        /* --- Script de Palabras Interactivas --- */
+        document.addEventListener('DOMContentLoaded', () => {
+            const words = document.querySelectorAll('.interactive-word');
+
+            words.forEach(word => {
+                word.addEventListener('click', function (e) {
+                    if (this.querySelector('.popup-emoji')) {
+                        return;
+                    }
+
+                    const emoji = this.dataset.emoji;
+
+                    const popup = document.createElement('span');
+                    popup.className = 'popup-emoji';
+                    popup.textContent = emoji;
+
+                    this.appendChild(popup);
+
+                    setTimeout(() => {
+                        popup.remove();
+                    }, 500);
+                });
+            });
+        });
+
+    </script>
+</body>
+
+</html>
