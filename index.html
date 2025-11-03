@@ -5,7 +5,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>¡Feliz Cumpleaños LILO! 🎉</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <style>
+        @import url(https://fonts.googleapis.com/css?family=Pacifico);
+
         * {
             margin: 0;
             padding: 0;
@@ -15,97 +18,91 @@
         body {
             font-family: 'Arial', sans-serif;
             overflow-x: hidden;
-            background: linear-gradient(135deg, #4a0000 0%, #800000 50%, #5a0000 100%);
+            background: linear-gradient(135deg, #8B2635 0%, #A0444D 100%);
             scroll-behavior: smooth;
         }
 
-        .section {
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            position: relative;
-            padding: 20px;
+        #canvas-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
         }
 
-        .container {
-            text-align: center;
-            z-index: 10;
-            padding: 20px;
+        .content-overlay {
             position: relative;
+            z-index: 10;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            pointer-events: none;
+        }
+
+        .top-section {
+            flex: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-top: 20px;
+        }
+
+        .middle-section {
+            flex: 1;
+            display: flex;
+            align-items: center;
+        }
+
+        .bottom-section {
+            flex: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-bottom: 20px;
+        }
+
+        .content-overlay>* {
+            pointer-events: auto;
         }
 
         h1 {
+            font-family: 'Pacifico', cursive;
             font-size: 4em;
             color: #fff;
-            text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.3);
-            margin-bottom: 20px;
+            text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.5);
+            margin-bottom: 0;
             animation: fadeInScale 1s ease-out;
-            transition: transform 0.3s, text-shadow 0.3s;
-        }
-
-        h1:hover {
-            transform: scale(1.03);
-            text-shadow: 4px 4px 12px rgba(0, 0, 0, 0.5);
+            text-align: center;
         }
 
         .name {
+            font-family: 'Pacifico', cursive;
             font-size: 5em;
             color: #ffd700;
-            text-shadow: 4px 4px 8px rgba(0, 0, 0, 0.4);
+            text-shadow: 4px 4px 8px rgba(0, 0, 0, 0.6);
             font-weight: bold;
             animation: bounceIn 1.5s ease-out;
             margin-bottom: 30px;
-            transition: transform 0.3s, color 0.3s, text-shadow 0.3s;
-        }
-
-        .name:hover {
-            transform: scale(1.03) rotate(-2deg);
-            color: #fff700;
-            text-shadow: 5px 5px 10px rgba(0, 0, 0, 0.5);
+            text-align: center;
         }
 
         .message {
-            font-size: 1.5em;
+            font-size: 1.3em;
             color: #fff;
-            max-width: 600px;
-            margin: 0 auto 40px;
-            line-height: 1.6;
+            max-width: 700px;
+            margin: 0 auto 20px;
+            line-height: 1.8;
             animation: fadeIn 2s ease-out;
-        }
-
-        .cake-container {
-            position: relative;
-            display: inline-block;
-            cursor: pointer;
-            margin-top: 20px;
-            animation: pulse 2s infinite ease-in-out;
-        }
-
-        .cake-photo {
-            font-size: 0;
-        }
-
-        .cake-photo img {
-            width: 180px;
-            height: 180px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 6px solid #fff;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
-            transition: transform 0.3s;
-        }
-
-        .cake-text {
-            color: #fff;
-            font-size: 1.2em;
-            font-weight: bold;
-            margin-top: 15px;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.4);
-        }
-
-        .cake-container:hover .cake-photo img {
-            transform: scale(1.08);
+            text-align: center;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            background: rgba(0, 0, 0, 0.3);
+            padding: 25px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
         }
 
         .btn {
@@ -130,12 +127,13 @@
         }
 
         .phrases-container {
-            position: absolute;
+            position: fixed;
             width: 100%;
             height: 100%;
             top: 0;
             left: 0;
             pointer-events: none;
+            z-index: 5;
         }
 
         .phrase-box {
@@ -151,7 +149,6 @@
             transition: transform 0.3s ease-out, background 0.3s ease-out, box-shadow 0.3s ease-out;
             cursor: pointer;
             backdrop-filter: blur(5px);
-            z-index: 5;
             pointer-events: auto;
             animation: floatPhrase 8s ease-in-out infinite alternate;
         }
@@ -192,20 +189,11 @@
             animation-delay: 3s;
         }
 
-        .balloon {
-            position: fixed;
-            bottom: -100px;
-            font-size: 3em;
-            animation: float 6s ease-in-out infinite;
-            z-index: 1;
-        }
-
         .confetti {
             position: fixed;
             width: 10px;
             height: 10px;
-            background: #f0f;
-            position: absolute;
+            z-index: 2;
             animation: fall linear infinite;
         }
 
@@ -251,32 +239,6 @@
             }
         }
 
-        @keyframes fadeInUp {
-            0% {
-                opacity: 0;
-                transform: translateY(50px);
-            }
-
-            100% {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @keyframes pulse {
-            0% {
-                transform: scale(1);
-            }
-
-            50% {
-                transform: scale(1.03);
-            }
-
-            100% {
-                transform: scale(1);
-            }
-        }
-
         @keyframes floatPhrase {
             0% {
                 transform: translate(0, 0);
@@ -299,37 +261,9 @@
             }
         }
 
-        @keyframes rotate {
-
-            0%,
-            100% {
-                transform: rotate(-5deg);
-            }
-
-            50% {
-                transform: rotate(5deg);
-            }
-        }
-
         @keyframes fall {
             to {
                 transform: translateY(100vh) rotate(360deg);
-            }
-        }
-
-        @keyframes float {
-            0% {
-                bottom: -100px;
-                transform: translateX(0);
-            }
-
-            50% {
-                transform: translateX(20px);
-            }
-
-            100% {
-                bottom: 110vh;
-                transform: translateX(-20px);
             }
         }
 
@@ -343,57 +277,39 @@
             }
 
             .message {
-                font-size: 1.2em;
-            }
-
-            .cake-photo img {
-                width: 150px;
-                height: 150px;
-            }
-
-            .cake-text {
-                font-size: 1.1em;
+                font-size: 1em;
+                padding: 15px;
             }
 
             .phrase-box {
                 font-size: 0.8em;
                 padding: 8px 15px;
             }
-
-            .phrase-box:nth-child(1) {
-                top: 5%;
-                left: 5%;
-            }
-
-            .phrase-box:nth-child(2) {
-                top: 15%;
-                right: 5%;
-            }
-
-            .phrase-box:nth-child(3) {
-                bottom: 5%;
-                left: 5%;
-            }
-
-            .phrase-box:nth-child(4) {
-                top: 25%;
-                right: 5%;
-            }
-
-            .phrase-box:nth-child(5) {
-                bottom: 15%;
-                left: 5%;
-            }
         }
     </style>
 </head>
 
 <body>
-    <div class="section">
+    <div id="canvas-container"></div>
 
-        <div class="container">
+    <div class="phrases-container">
+        <div class="phrase-box">llora pues</div>
+        <div class="phrase-box">soporta</div>
+        <div class="phrase-box">ayer dejamos de tener 16</div>
+        <div class="phrase-box">ladra mas fuerte</div>
+        <div class="phrase-box">me gusta el pene</div>
+    </div>
+
+    <div class="content-overlay">
+        <div class="top-section">
             <h1>🎊 ¡FELIZ CUMPLEAÑOS! 🎊</h1>
-            <div class="name">LILO MI AMOR</div>
+        </div>
+
+        <div class="middle-section">
+            <!-- Espacio para el pastel -->
+        </div>
+
+        <div class="bottom-section">
             <p class="message">
                 Que aburrido celebrar los cumpleaños y peor a gente negra,
                 jajaja Que te puedo decir mi amor, espero te la pases excelente,
@@ -401,27 +317,9 @@
                 aqui tenes un poco de mi cariño. BESOS EN LA PUCHAINA
                 ¡Que todos tus sueños se hagan realidad! 🎈✨
             </p>
-
-            <div class="cake-container" onclick="celebrate()">
-                <div class="cake-photo">
-                    <img src="https://www.mokaconfiteria.com/images/Tarta-Pene.JPG"
-                        alt="Pastel de cumpleaños con forma particular">
-                </div>
-                <p class="cake-text">aquí tienes tu pastel, para que te lo comas entero</p>
-            </div>
-            <br><br>
             <button id="musicBtn" class="btn" onclick="playMusic()">🎵 Reproducir Música</button>
             <a href="sopaLetras.html" class="btn">🔍 Jugar Sopa de Letras</a>
         </div>
-
-        <div class="phrases-container">
-            <div class="phrase-box">llora pues</div>
-            <div class="phrase-box">soporta</div>
-            <div class="phrase-box">ayer dejamos de tener 16</div>
-            <div class="phrase-box">ladra mas fuerte</div>
-            <div class="phrase-box">me gusta el pene</div>
-        </div>
-
     </div>
 
     <audio id="bgMusic" loop>
@@ -429,8 +327,216 @@
     </audio>
 
     <script>
+        let scene, camera, renderer, cake, candles = [];
         const colors = ['#ff6b6b', '#4ecdc4', '#45b7d1', '#f9ca24', '#6c5ce7', '#fd79a8', '#fdcb6e', '#e17055'];
         let musicPlaying = false;
+
+        function init() {
+            scene = new THREE.Scene();
+
+            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera.position.set(0, 3, 8);
+            camera.lookAt(0, 0, 0);
+
+            const container = document.getElementById('canvas-container');
+            renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.shadowMap.enabled = true;
+            container.appendChild(renderer.domElement);
+
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+            scene.add(ambientLight);
+
+            const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+            directionalLight.position.set(5, 10, 5);
+            directionalLight.castShadow = true;
+            scene.add(directionalLight);
+
+            const pointLight = new THREE.PointLight(0xffaa00, 1, 100);
+            pointLight.position.set(0, 5, 0);
+            scene.add(pointLight);
+
+            createCake();
+            createCandles();
+            createCakeText();
+
+            window.addEventListener('resize', onWindowResize);
+            animate();
+
+            setInterval(createConfetti, 300);
+        }
+
+        function createCake() {
+            cake = new THREE.Group();
+
+            const bottomLayer = createCakeLayer(3, 1.2, 0xffb6c1);
+            bottomLayer.position.y = 0;
+            cake.add(bottomLayer);
+
+            const bottomChoco = createChocolateLayer(3, 2.5, 0.2, 1.1);
+            cake.add(bottomChoco);
+
+            const middleLayer = createCakeLayer(2.5, 1, 0xffc0cb);
+            middleLayer.position.y = 1.3;
+            cake.add(middleLayer);
+
+            const middleChoco = createChocolateLayer(2.5, 2, 0.2, 2.2);
+            cake.add(middleChoco);
+
+            const topLayer = createCakeLayer(2, 0.8, 0xffb6c1);
+            topLayer.position.y = 2.4;
+            cake.add(topLayer);
+
+            const topFrosting = createFrosting(2, 0.15, 3.2);
+            cake.add(topFrosting);
+
+            scene.add(cake);
+        }
+
+        function createCakeLayer(radius, height, color) {
+            const geometry = new THREE.CylinderGeometry(radius, radius, height, 32);
+            const material = new THREE.MeshPhongMaterial({
+                color: color,
+                shininess: 30
+            });
+            const layer = new THREE.Mesh(geometry, material);
+            layer.castShadow = true;
+            layer.receiveShadow = true;
+            return layer;
+        }
+
+        function createFrosting(radius, height, yPos) {
+            const geometry = new THREE.CylinderGeometry(radius + 0.05, radius + 0.05, height, 32);
+            const material = new THREE.MeshPhongMaterial({
+                color: 0xfefae9,
+                shininess: 80
+            });
+            const frosting = new THREE.Mesh(geometry, material);
+            frosting.position.y = yPos;
+            frosting.castShadow = true;
+            return frosting;
+        }
+
+        function createChocolateLayer(radiusTop, radiusBottom, height, yPos) {
+            const geometry = new THREE.CylinderGeometry(radiusTop, radiusBottom, height, 32);
+            const material = new THREE.MeshPhongMaterial({
+                color: 0x8b6a60,
+                shininess: 60
+            });
+            const chocolate = new THREE.Mesh(geometry, material);
+            chocolate.position.y = yPos;
+            chocolate.castShadow = true;
+            chocolate.receiveShadow = true;
+            return chocolate;
+        }
+
+        function createCandles() {
+            const numCandles = 17;
+            const radius = 2;
+
+            for (let i = 0; i < numCandles; i++) {
+                const angle = (i / numCandles) * Math.PI * 2;
+                const x = Math.cos(angle) * radius;
+                const z = Math.sin(angle) * radius;
+
+                const candle = createCandle();
+                candle.position.set(x, 3.4, z);
+                cake.add(candle);
+                candles.push(candle);
+            }
+        }
+
+        function createCandle() {
+            const candleGroup = new THREE.Group();
+
+            const bodyGeometry = new THREE.CylinderGeometry(0.08, 0.08, 0.6, 16);
+            const bodyMaterial = new THREE.MeshPhongMaterial({ color: 0xffffff });
+            const body = new THREE.Mesh(bodyGeometry, bodyMaterial);
+            body.castShadow = true;
+            candleGroup.add(body);
+
+            const stripeGeometry = new THREE.CylinderGeometry(0.085, 0.085, 0.05, 16);
+            const stripeMaterial = new THREE.MeshPhongMaterial({ color: 0xff0000, opacity: 0.6, transparent: true });
+
+            const stripe1 = new THREE.Mesh(stripeGeometry, stripeMaterial);
+            stripe1.position.y = 0.15;
+            candleGroup.add(stripe1);
+
+            const stripe2 = new THREE.Mesh(stripeGeometry, stripeMaterial);
+            stripe2.position.y = -0.1;
+            candleGroup.add(stripe2);
+
+            const flameGeometry = new THREE.SphereGeometry(0.12, 8, 8);
+            flameGeometry.scale(1, 1.5, 1);
+            const flameMaterial = new THREE.MeshBasicMaterial({
+                color: 0xffaa00,
+                transparent: true,
+                opacity: 0.8
+            });
+            const flame = new THREE.Mesh(flameGeometry, flameMaterial);
+            flame.position.y = 0.4;
+            candleGroup.add(flame);
+
+            const flameLight = new THREE.PointLight(0xffaa00, 0.5, 2);
+            flameLight.position.y = 0.4;
+            candleGroup.add(flameLight);
+
+            candleGroup.userData.flame = flame;
+            candleGroup.userData.time = Math.random() * Math.PI * 2;
+
+            return candleGroup;
+        }
+
+        function createCakeText() {
+            const canvas = document.createElement('canvas');
+            const context = canvas.getContext('2d');
+            canvas.width = 512;
+            canvas.height = 256;
+
+            context.fillStyle = '#ff69b4';
+            context.font = 'bold 120px Arial';
+            context.textAlign = 'center';
+            context.textBaseline = 'middle';
+            context.fillText('LILO', 256, 128);
+
+            const texture = new THREE.CanvasTexture(canvas);
+            const material = new THREE.MeshBasicMaterial({
+                map: texture,
+                transparent: true,
+                side: THREE.DoubleSide
+            });
+
+            const geometry = new THREE.PlaneGeometry(3, 1.5);
+            const textMesh = new THREE.Mesh(geometry, material);
+            textMesh.position.set(0, 1.9, 2.51);
+            cake.add(textMesh);
+
+            const textMesh2 = textMesh.clone();
+            textMesh2.position.set(0, 1.9, -2.51);
+            textMesh2.rotation.y = Math.PI;
+            cake.add(textMesh2);
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+
+            cake.rotation.y += 0.005;
+
+            candles.forEach(candleGroup => {
+                candleGroup.userData.time += 0.1;
+                const flame = candleGroup.userData.flame;
+                flame.scale.y = 1.5 + Math.sin(candleGroup.userData.time) * 0.2;
+                flame.position.y = 0.4 + Math.sin(candleGroup.userData.time * 2) * 0.05;
+            });
+
+            renderer.render(scene, camera);
+        }
+
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }
 
         function createConfetti() {
             const confetti = document.createElement('div');
@@ -444,25 +550,6 @@
             setTimeout(() => {
                 confetti.remove();
             }, 5000);
-        }
-
-        function createBalloon() {
-            const balloon = document.createElement('div');
-            balloon.className = 'balloon';
-            balloon.textContent = '🎈';
-            balloon.style.left = Math.random() * 90 + 'vw';
-            balloon.style.animationDuration = (Math.random() * 3 + 5) + 's';
-            document.body.appendChild(balloon);
-
-            setTimeout(() => {
-                balloon.remove();
-            }, 8000);
-        }
-
-        function celebrate() {
-            for (let i = 0; i < 30; i++) {
-                setTimeout(createConfetti, i * 50);
-            }
         }
 
         function playMusic() {
@@ -479,11 +566,7 @@
             }
         }
 
-        if (document.querySelector('.container')) {
-            setInterval(createConfetti, 300);
-            setInterval(createBalloon, 2000);
-            setTimeout(celebrate, 500);
-        }
+        init();
     </script>
 </body>
 
